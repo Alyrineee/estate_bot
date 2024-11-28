@@ -13,7 +13,9 @@ class GoogleSheets:
 class UserCreation(GoogleSheets):
     def __init__(self):
         super().__init__()
-        self.requests = self.spreadsheet.get_worksheet_by_id(self.topics.get("Заявки"))
+        self.requests = self.spreadsheet.get_worksheet_by_id(
+            self.topics.get("Заявки")
+        )
         self.users = self.spreadsheet.get_worksheet_by_id(
             self.topics.get("Пользователи")
         )
@@ -32,3 +34,17 @@ class UserCreation(GoogleSheets):
             f"A{index}:E{index}",
             [self.requests.row_values(row)],
         )
+
+
+class AgentRequest(GoogleSheets):
+    def __init__(self):
+        super().__init__()
+        self.clients = self.spreadsheet.get_worksheet_by_id(
+            self.topics.get("Клиенты")
+        )
+        self.houses = self.spreadsheet.get_worksheet_by_id(
+            self.topics.get("ЖК")
+        )
+
+    def get_houses(self):
+        return self.houses.get_all_values()[1:]

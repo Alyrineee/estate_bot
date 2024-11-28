@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 
 from app.base.base import base
+from estate_bot.app.agent.agent import agent
 from estate_bot.config import TOKEN
 
 load_dotenv()
@@ -14,7 +15,7 @@ dp = Dispatcher()
 
 
 async def main():
-    dp.include_router(base)
+    dp.include_routers(base, agent)
     await dp.start_polling(bot)
 
 

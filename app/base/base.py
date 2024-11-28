@@ -2,7 +2,7 @@ from urllib3 import request
 
 import estate_bot.app.base.base_keyboards
 from estate_bot.config import ADMINS
-from estate_bot.utils.google_api.models import GoogleSheets, UserCreation
+from estate_bot.utils.google_api.models import UserCreation
 
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
@@ -42,8 +42,8 @@ async def callback_agent(callback: CallbackQuery, state: FSMContext):
     )
 
 
-@base.callback_query(F.data == "agent")
-async def callback_agent(callback: CallbackQuery, state: FSMContext):
+@base.callback_query(F.data == "manager")
+async def callback_manager(callback: CallbackQuery, state: FSMContext):
     await state.set_state(RegistrationState.phone_number)
     await callback.answer()
     await state.update_data(
@@ -69,7 +69,7 @@ async def state_phone_number(message: Message, state: FSMContext):
 
 
 @base.message(RegistrationState.full_name)
-async def state_phone_number(message: Message, state: FSMContext):
+async def state_full_name(message: Message, state: FSMContext):
     await state.set_state(RegistrationState.email)
     await state.update_data(
         full_name=message.text,
@@ -117,8 +117,9 @@ async def user_accept(callback: CallbackQuery):
     table.request_accept(callback.data.replace("confirm_", ""))
     await callback.message.message.edit_text("Пользователь создан✅")
 
+
 @base.callback_query(F.data.startswith("decline_"))
-async def user_accept(callback: CallbackQuery):
+async def user_decline(callback: CallbackQuery):
     await callback.answer()
     await callback.bot.send_message(
         callback.data.replace("decline_", ""),
