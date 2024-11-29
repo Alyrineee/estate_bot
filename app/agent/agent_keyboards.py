@@ -102,6 +102,7 @@ def houses_inline_keyboard(data, page):
     keyboard.row(*bottom_buttons)
     return keyboard.as_markup()
 
+
 agent_access_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [

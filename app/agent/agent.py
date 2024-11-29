@@ -4,9 +4,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import CallbackQuery, Message
 from estate_bot.app.agent.agent_keyboards import (
+    agent_access_keyboard,
     budget_inline_keyboard,
     houses_inline_keyboard,
-    region_inline_keyboard, agent_access_keyboard,
+    region_inline_keyboard,
 )
 from estate_bot.utils.google_api.models import AgentRequest
 
@@ -132,7 +133,7 @@ async def callback_agent_accept(callback: CallbackQuery, state: FSMContext):
 
 
 @agent.callback_query(F.data == "agent_decline")
-async def callback_agent_accept(callback: CallbackQuery, state: FSMContext):
+async def callback_agent_decline(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await state.clear()
     await callback.message.edit_text("Заявка удалена❌")
