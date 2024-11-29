@@ -5,6 +5,7 @@ from aiogram import Bot, Dispatcher
 from app.base.base import base
 from estate_bot.app.agent.agent import agent
 from estate_bot.app.manager.manager import manager
+from estate_bot.app.middleware.authenticate import AuthenticateMiddleware
 from estate_bot.config import TOKEN
 
 logging.basicConfig(level=logging.INFO)
@@ -14,6 +15,7 @@ dp = Dispatcher()
 
 async def main():
     dp.include_routers(base, agent, manager)
+    dp.message.middleware.register(AuthenticateMiddleware())
     await dp.start_polling(bot)
 
 

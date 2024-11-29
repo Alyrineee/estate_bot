@@ -9,11 +9,16 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 def clients_inline_keyboard(data, page):
     keyboard = InlineKeyboardBuilder()
-    if page > ceil(len(data) / 5):
-        page = ceil(len(data) / 5)
+    clean_data = []
+    for request in data:
+        if request[6] == "Ожидает ответа":
+            clean_data.append(request)
 
-    left, right = (page - 1) * 5, min(len(data), (page - 1) * 5 + 5)
-    for request in data[left:right]:
+    if page > ceil(len(clean_data) / 5):
+        page = ceil(len(clean_data) / 5)
+
+    left, right = (page - 1) * 5, min(len(clean_data), (page - 1) * 5 + 5)
+    for request in clean_data[left:right]:
         keyboard.add(
             InlineKeyboardButton(
                 text=request[1],
@@ -39,12 +44,12 @@ def clients_inline_keyboard(data, page):
 
     bottom_buttons.append(
         InlineKeyboardButton(
-            text=f"{page}/{ceil(len(data)/5)}",
+            text=f"{page}/{ceil(len(clean_data)/5)}",
             callback_data="amount_of_pages",
         )
     )
 
-    if page != ceil(len(data) / 5):
+    if page != ceil(len(clean_data) / 5):
         bottom_buttons.append(
             InlineKeyboardButton(
                 text="➡️",

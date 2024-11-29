@@ -7,7 +7,6 @@ import estate_bot.app.base.base_keyboards
 from estate_bot.config import ADMINS
 from estate_bot.utils.google_api.models import UserCreation
 
-
 base = Router()
 table = UserCreation()
 
@@ -21,7 +20,11 @@ class RegistrationState(StatesGroup):
 @base.message(CommandStart())
 async def cmd_start(message: Message):
     await message.answer(
-        "Приветствую!\nВыбери роль:",
+        "👋 Добро пожаловать!\n\n"
+        "Перед началом работы, пожалуйста, выберите вашу роль:\n"
+        "- 🕵️‍♂️ Агент (являетесь представителем компании или клиентом)\n"
+        "- ✍️ Оформитель (занимаетесь документами)\n\n"
+        "После выбора роли нам понадобятся ваши данные, чтобы начать",
         reply_markup=estate_bot.app.base.base_keyboards.role_choice_keyboard,
     )
 
