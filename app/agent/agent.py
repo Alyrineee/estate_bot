@@ -1,15 +1,14 @@
+from aiogram import F, Router
+from aiogram.filters import Command
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State, StatesGroup
+from aiogram.types import CallbackQuery, Message
 from estate_bot.app.agent.agent_keyboards import (
     budget_inline_keyboard,
     houses_inline_keyboard,
     region_inline_keyboard,
 )
 from estate_bot.utils.google_api.models import AgentRequest
-
-from aiogram import F, Router
-from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery
-from aiogram.fsm.state import StatesGroup, State
-from aiogram.filters import Command
 
 agent = Router()
 table = AgentRequest()

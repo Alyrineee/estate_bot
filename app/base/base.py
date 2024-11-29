@@ -1,12 +1,12 @@
+from aiogram import F, Router
+from aiogram.filters import CommandStart
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State, StatesGroup
+from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
 import estate_bot.app.base.base_keyboards
 from estate_bot.config import ADMINS
 from estate_bot.utils.google_api.models import UserCreation
 
-from aiogram import F, Router
-from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
-from aiogram.fsm.state import StatesGroup, State
-from aiogram.filters import CommandStart
 
 base = Router()
 table = UserCreation()
