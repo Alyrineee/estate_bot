@@ -1,18 +1,19 @@
-from urllib3 import request
-
-import estate_bot.app.base.base_keyboards
-from estate_bot.app.agent.agent_keyboards import region_inline_keyboard, budget_inline_keyboard, houses_inline_keyboard
-from estate_bot.config import ADMINS
-from estate_bot.utils.google_api.models import UserCreation, AgentRequest
+from estate_bot.app.agent.agent_keyboards import (
+    budget_inline_keyboard,
+    houses_inline_keyboard,
+    region_inline_keyboard,
+)
+from estate_bot.utils.google_api.models import AgentRequest
 
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.filters import Command
 
 agent = Router()
 table = AgentRequest()
+
 
 class RequestStates(StatesGroup):
     full_name = State()
@@ -20,7 +21,6 @@ class RequestStates(StatesGroup):
     region = State()
     budget = State()
     house = State()
-
 
 
 @agent.message(Command("new_request"))
@@ -45,35 +45,70 @@ async def state_phone_number(message: Message, state: FSMContext):
         reply_markup=region_inline_keyboard,
     )
 
+
 @agent.callback_query(RequestStates.region)
-async def state_phone_number(callback: CallbackQuery, state: FSMContext):
-   await state.set_state(RequestStates.budget)
-   await state.update_data(region=callback.data)
-   await callback.answer()
-   await callback.message.answer(
-       "Укажите бюджет клиента:",
-        reply_markup = budget_inline_keyboard,
-   )
+async def state_region(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(RequestStates.budget)
+    region = "Москва"
+    if callback.data == "Other":
+        region = "Другой регион"
+
+    await state.update_data(region=region)
+    await callback.answer()
+    await callback.message.answer(
+        "Укажите бюджет клиента:",
+        reply_markup=budget_inline_keyboard,
+    )
 
 
 @agent.callback_query(RequestStates.budget)
-async def state_phone_number(callback: CallbackQuery, state: FSMContext):
-    await state.update_data(budget=callback.data)
+async def state_budget(callback: CallbackQuery, state: FSMContext):
+    page = await state.get_data()
+    budget = {
+        "less": "до 15 млн",
+        "around": "15-20 млн",
+        "more": "более 35 млн",
+    }
+    await state.update_data(budget=budget[callback.data])
     await state.set_state(RequestStates.house)
     await callback.answer()
     await callback.message.answer(
         "Выберите ЖК",
-        reply_markup = houses_inline_keyboard(table.get_houses()),
+        reply_markup=houses_inline_keyboard(
+            table.get_houses(),
+            page.get("current_page", 1),
+        ),
+    )
+
+
+@agent.callback_query(F.data.startswith("page"))
+async def paginate_page(callback: CallbackQuery):
+    await callback.answer()
+    await callback.message.edit_reply_markup(
+        reply_markup=houses_inline_keyboard(
+            table.get_houses(),
+            int(callback.data.split("#")[1]),
+        ),
     )
 
 
 @agent.callback_query(RequestStates.house)
-async def state_phone_number(callback: CallbackQuery, state: FSMContext):
+async def state_house(callback: CallbackQuery, state: FSMContext):
     data = callback.data.split("_")
     await callback.answer()
     await state.update_data(
         house=data[0],
         builder=data[1],
     )
-    print(await state.get_data())
+    data = await state.get_data()
+    table.create_agent_request(
+        [
+            data["full_name"],
+            data["phone_number"],
+            data["region"],
+            data["budget"],
+            data["house"],
+            "Ожидает ответа",
+        ],
+    )
     await callback.message.answer("Успешно")

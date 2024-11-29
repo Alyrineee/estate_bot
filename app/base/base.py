@@ -1,5 +1,3 @@
-from urllib3 import request
-
 import estate_bot.app.base.base_keyboards
 from estate_bot.config import ADMINS
 from estate_bot.utils.google_api.models import UserCreation
@@ -122,7 +120,6 @@ async def user_accept(callback: CallbackQuery):
 async def user_decline(callback: CallbackQuery):
     await callback.answer()
     await callback.bot.send_message(
-        callback.data.replace("decline_", ""),
-        "Вашу заявку отклонили❌"
+        callback.data.replace("decline_", ""), "Вашу заявку отклонили❌"
     )
     await callback.message.edit_text("Запрос отклонен❌")

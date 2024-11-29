@@ -1,0 +1,5 @@
+[tool.flake8]
+max-line-length = 79
+import-order-style = "google"
+inline-quotes = '"'
+exclude = ['.venv/*']

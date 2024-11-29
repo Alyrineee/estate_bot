@@ -7,17 +7,19 @@ class GoogleSheets:
     def __init__(self):
         self.account = gspread.service_account(filename=SERVICE_ACCOUNT)
         self.spreadsheet = self.account.open_by_url(SPREADSHEET_URL)
-        self.topics = {elem.title: elem.id for elem in self.spreadsheet.worksheets()}
+        self.topics = {
+            elem.title: elem.id for elem in self.spreadsheet.worksheets()
+        }
 
 
 class UserCreation(GoogleSheets):
     def __init__(self):
         super().__init__()
         self.requests = self.spreadsheet.get_worksheet_by_id(
-            self.topics.get("Заявки")
+            self.topics.get("Заявки"),
         )
         self.users = self.spreadsheet.get_worksheet_by_id(
-            self.topics.get("Пользователи")
+            self.topics.get("Пользователи"),
         )
 
     def request_creation(self, data):
@@ -40,11 +42,18 @@ class AgentRequest(GoogleSheets):
     def __init__(self):
         super().__init__()
         self.clients = self.spreadsheet.get_worksheet_by_id(
-            self.topics.get("Клиенты")
+            self.topics.get("Клиенты"),
         )
         self.houses = self.spreadsheet.get_worksheet_by_id(
-            self.topics.get("ЖК")
+            self.topics.get("ЖК"),
         )
 
     def get_houses(self):
         return self.houses.get_all_values()[1:]
+
+    def create_agent_request(self, data):
+        index = len(self.clients.get_all_values()) + 1
+        self.clients.update(
+            f"A{index}:F{index}",
+            [data],
+        )
