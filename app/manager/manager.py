@@ -1,5 +1,7 @@
 from aiogram import F, Router
 from aiogram.filters import Command
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import CallbackQuery, Message
 from estate_bot.app.manager.manager_keyboards import (
     client_accept_keyboard,
@@ -9,6 +11,11 @@ from estate_bot.utils.google_api.models import ClientManager
 
 manager = Router()
 table = ClientManager()
+
+
+class HousesBuilderStates(StatesGroup):
+    houses = State()
+    builders = State()
 
 
 @manager.message(Command("check_requests"))
@@ -48,18 +55,42 @@ async def callback_request(callback: CallbackQuery):
 
 
 @manager.callback_query(F.data.startswith("caccept"))
-async def callback_client_accept(callback: CallbackQuery):
+async def callback_client_accept(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
+    await state.update_data(row_id=int(callback.data.split("#")[1]))
+    await state.set_state(HousesBuilderStates.houses)
+    await callback.message.edit_text("Введите ЖК через запятую")
+
+
+@manager.message(HousesBuilderStates.houses)
+async def state_houses(message: Message, state: FSMContext):
+    await state.update_data(houses=message.text)
+    await state.set_state(HousesBuilderStates.builders)
+    await message.answer("Введите застройщиков через запятую")
+
+
+@manager.message(HousesBuilderStates.builders)
+async def state_builders(message: Message, state: FSMContext):
+    await state.update_data(builders=message.text)
+    await state.set_state(HousesBuilderStates.builders)
+    data = await state.get_data()
     table.edit_status(
-        int(callback.data.split("#")[1]),
+        data["row_id"],
         "Клиент уникален",
     )
-    await callback.message.edit_text("Успешно")
+    await message.answer("Успешно✅")
+    await state.clear()
 
 
 @manager.callback_query(F.data.startswith("cdecline"))
 async def callback_client_decline(callback: CallbackQuery):
     await callback.answer()
+    agent_id = table.get_client(callback.data.split("#")[1])[7]
+    await callback.bot.send_message(
+        agent_id,
+        "Клиент не уникален. "
+        "Повторная заявка на данного клиента не требуется.",
+    )
     table.edit_status(
         int(callback.data.split("#")[1]),
         "Клиент не уникален",

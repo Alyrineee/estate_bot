@@ -46,7 +46,7 @@ class AgentRequest(GoogleSheets):
         index = len(self.clients.get_all_values()) + 1
         data.insert(0, index - 1)
         self.clients.update(
-            f"A{index}:G{index}",
+            f"A{index}:H{index}",
             [data],
         )
 

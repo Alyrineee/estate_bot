@@ -126,6 +126,7 @@ async def callback_agent_accept(callback: CallbackQuery, state: FSMContext):
             data["budget"],
             data["house"],
             "Ожидает ответа",
+            callback.message.chat.id,
         ],
     )
     await state.clear()
