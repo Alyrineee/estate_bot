@@ -6,7 +6,7 @@ from aiogram.types import CallbackQuery, Message
 from estate_bot.app.agent.agent_keyboards import (
     budget_inline_keyboard,
     houses_inline_keyboard,
-    region_inline_keyboard,
+    region_inline_keyboard, agent_access_keyboard,
 )
 from estate_bot.utils.google_api.models import AgentRequest
 
@@ -93,13 +93,30 @@ async def paginate_page(callback: CallbackQuery):
 
 @agent.callback_query(RequestStates.house)
 async def state_house(callback: CallbackQuery, state: FSMContext):
-    data = callback.data.split("_")
+    callback_data = callback.data.split("_")
     await callback.answer()
+    await state.set_state(None)
     await state.update_data(
-        house=data[0],
-        builder=data[1],
+        house=callback_data[0],
+        builder=callback_data[1],
     )
     data = await state.get_data()
+    await callback.message.answer(
+        "Подтвердите заявку⚠️\n\n"
+        f"Имя: {data["full_name"]}\n"
+        f"Телефон: {data["phone_number"]}\n"
+        f"Регион: {data["region"]}\n"
+        f"Бюджет: {data["budget"]}\n"
+        f"ЖК: {data["house"]}\n"
+        f"Застройщик: {data["builder"]}\n",
+        reply_markup=agent_access_keyboard,
+    )
+
+
+@agent.callback_query(F.data == "agent_accept")
+async def callback_agent_accept(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    await callback.answer()
     table.create_agent_request(
         [
             data["full_name"],
@@ -111,4 +128,11 @@ async def state_house(callback: CallbackQuery, state: FSMContext):
         ],
     )
     await state.clear()
-    await callback.message.answer("Успешно")
+    await callback.message.edit_text("Заявка успешно создана✅")
+
+
+@agent.callback_query(F.data == "agent_decline")
+async def callback_agent_accept(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    await state.clear()
+    await callback.message.edit_text("Заявка удалена❌")

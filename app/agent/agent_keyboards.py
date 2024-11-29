@@ -101,3 +101,18 @@ def houses_inline_keyboard(data, page):
     keyboard = keyboard.adjust(1)
     keyboard.row(*bottom_buttons)
     return keyboard.as_markup()
+
+agent_access_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text="Подтвердить✅",
+                callback_data="agent_accept",
+            ),
+            InlineKeyboardButton(
+                text="Отмена❌",
+                callback_data="agent_decline",
+            ),
+        ]
+    ]
+)

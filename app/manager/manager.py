@@ -15,7 +15,10 @@ table = ClientManager()
 async def check_requests(message: Message):
     await message.answer(
         "Выберите заявку",
-        reply_markup=clients_inline_keyboard(table.get_clients(), 1),
+        reply_markup=clients_inline_keyboard(
+            table.get_clients(),
+            1,
+        ),
     )
 
 
