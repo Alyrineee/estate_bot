@@ -110,4 +110,5 @@ async def state_house(callback: CallbackQuery, state: FSMContext):
             "Ожидает ответа",
         ],
     )
+    await state.clear()
     await callback.message.answer("Успешно")

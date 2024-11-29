@@ -113,7 +113,7 @@ async def state_email(message: Message, state: FSMContext):
 async def user_accept(callback: CallbackQuery):
     await callback.answer()
     table.request_accept(callback.data.replace("confirm_", ""))
-    await callback.message.message.edit_text("Пользователь создан✅")
+    await callback.message.edit_text("Пользователь создан✅")
 
 
 @base.callback_query(F.data.startswith("decline_"))

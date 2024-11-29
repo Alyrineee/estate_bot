@@ -6,9 +6,7 @@ class GoogleSheets:
     def __init__(self):
         self.account = gspread.service_account(filename=SERVICE_ACCOUNT)
         self.spreadsheet = self.account.open_by_url(SPREADSHEET_URL)
-        self.topics = {
-            elem.title: elem.id for elem in self.spreadsheet.worksheets()
-        }
+        self.topics = {el.title: el.id for el in self.spreadsheet.worksheets()}
 
 
 class UserCreation(GoogleSheets):
@@ -29,7 +27,7 @@ class UserCreation(GoogleSheets):
         )
 
     def request_accept(self, telegram_id):
-        row = self.requests.find(telegram_id).row
+        row = self.requests.findall(telegram_id)[-1].row
         index = len(self.users.get_all_values()) + 1
         self.users.update(
             f"A{index}:E{index}",
@@ -52,7 +50,29 @@ class AgentRequest(GoogleSheets):
 
     def create_agent_request(self, data):
         index = len(self.clients.get_all_values()) + 1
+        data.insert(0, index - 1)
         self.clients.update(
-            f"A{index}:F{index}",
+            f"A{index}:G{index}",
             [data],
         )
+
+
+class ClientManager(GoogleSheets):
+    def __init__(self):
+        super().__init__()
+        self.clients = self.spreadsheet.get_worksheet_by_id(
+            self.topics.get("Клиенты"),
+        )
+
+    def get_clients(self):
+        return self.clients.get_all_values()[1:]
+
+    def edit_status(self, index, data):
+        self.clients.update(
+            f"G{index+1}",
+            [[data]],
+        )
+
+    def get_client(self, client_id):
+        row = self.clients.find(client_id).row
+        return self.clients.row_values(row)

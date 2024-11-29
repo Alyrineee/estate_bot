@@ -6,58 +6,18 @@ from aiogram.types import (
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-region_inline_keyboard = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text="Москва",
-                callback_data="Moscow",
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                text="Другой регион",
-                callback_data="Other",
-            ),
-        ],
-    ],
-)
 
-budget_inline_keyboard = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text="до 15 млн",
-                callback_data="less",
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                text="15-20 млн",
-                callback_data="around",
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                text="до 35 млн",
-                callback_data="more",
-            ),
-        ],
-    ],
-)
-
-
-def houses_inline_keyboard(data, page):
+def clients_inline_keyboard(data, page):
     keyboard = InlineKeyboardBuilder()
     if page > ceil(len(data) / 5):
         page = ceil(len(data) / 5)
 
     left, right = (page - 1) * 5, min(len(data), (page - 1) * 5 + 5)
-    for house in data[left:right]:
+    for request in data[left:right]:
         keyboard.add(
             InlineKeyboardButton(
-                text=house[0],
-                callback_data=f"{house[0]}_{house[1]}",
+                text=request[1],
+                callback_data=f"request#{request[0]}",
             )
         )
 
@@ -66,7 +26,7 @@ def houses_inline_keyboard(data, page):
         bottom_buttons.append(
             InlineKeyboardButton(
                 text="⬅️",
-                callback_data=f"page#{page-1}",
+                callback_data=f"rpage#{page-1}",
             )
         )
     else:
@@ -88,7 +48,7 @@ def houses_inline_keyboard(data, page):
         bottom_buttons.append(
             InlineKeyboardButton(
                 text="➡️",
-                callback_data=f"page#{page+1}",
+                callback_data=f"rpage#{page+1}",
             )
         )
     else:
@@ -101,3 +61,20 @@ def houses_inline_keyboard(data, page):
     keyboard = keyboard.adjust(1)
     keyboard.row(*bottom_buttons)
     return keyboard.as_markup()
+
+
+def client_accept_keyboard(client_id):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="Клиент уникален",
+                    callback_data=f"caccept#{client_id}",
+                ),
+                InlineKeyboardButton(
+                    text="Клиент не уникален",
+                    callback_data=f"cdecline#{client_id}",
+                ),
+            ]
+        ]
+    )
