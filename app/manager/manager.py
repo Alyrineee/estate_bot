@@ -81,7 +81,7 @@ async def state_builders(message: Message, state: FSMContext):
     )
     await message.bot.send_message(
         agent_id,
-        f"Клиент уникален для следующих ЖК: {data["houses"]}",
+        f'Клиент уникален для следующих ЖК: {data["houses"]}',
     )
 
     await message.answer("Успешно✅")
@@ -94,7 +94,7 @@ async def callback_client_decline(callback: CallbackQuery):
     agent_id = table.get_client(callback.data.split("#")[1])[7]
     await callback.bot.send_message(
         agent_id,
-        "Клиент не уникален. "
+        "Клиент не уникален.\n\n"
         "Повторная заявка на данного клиента не требуется.",
     )
     table.edit_status(

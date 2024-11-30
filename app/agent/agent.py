@@ -104,12 +104,12 @@ async def state_house(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     await callback.message.answer(
         "Подтвердите заявку⚠️\n\n"
-        f"Имя: {data["full_name"]}\n"
-        f"Телефон: {data["phone_number"]}\n"
-        f"Регион: {data["region"]}\n"
-        f"Бюджет: {data["budget"]}\n"
-        f"ЖК: {data["house"]}\n"
-        f"Застройщик: {data["builder"]}\n",
+        f'Имя: {data["full_name"]}\n'
+        f'Телефон: {data["phone_number"]}\n'
+        f'Регион: {data["region"]}\n'
+        f'Бюджет: {data["budget"]}\n'
+        f'ЖК: {data["house"]}\n'
+        f'Застройщик: {data["builder"]}\n',
         reply_markup=agent_access_keyboard,
     )
 

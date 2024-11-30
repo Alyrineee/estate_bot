@@ -10,9 +10,6 @@ class GoogleSheets:
         self.clients = self.spreadsheet.get_worksheet_by_id(
             self.topics.get("Клиенты"),
         )
-        self.requests = self.spreadsheet.get_worksheet_by_id(
-            self.topics.get("Заявки"),
-        )
         self.users = self.spreadsheet.get_worksheet_by_id(
             self.topics.get("Пользователи"),
         )
@@ -23,18 +20,17 @@ class GoogleSheets:
 
 class UserCreation(GoogleSheets):
     def request_creation(self, data):
-        index = len(self.requests.get_all_values()) + 1
-        self.requests.update(
-            f"A{index}:E{index}",
+        index = len(self.users.get_all_values()) + 1
+        self.users.update(
+            f"A{index}:F{index}",
             [data],
         )
 
     def request_accept(self, telegram_id):
-        row = self.requests.findall(telegram_id)[-1].row
-        index = len(self.users.get_all_values()) + 1
+        row = self.users.find(telegram_id).row
         self.users.update(
-            f"A{index}:E{index}",
-            [self.requests.row_values(row)],
+            f"F{row}",
+            [["Активирован"]],
         )
 
 
@@ -71,14 +67,18 @@ class Authenticate(GoogleSheets):
         row = self.users.find(str(data))
         if permission == "base" and row is None:
             return False
-        elif (
+
+        clean_data = self.users.row_values(row.row)
+        if (
             permission == "agent"
-            and self.users.row_values(row.row)[4] == "Агент"
+            and clean_data[4] == "Агент"
+            and clean_data[5] == "Активирован"
         ):
             return False
         elif (
             permission == "manager"
             and self.users.row_values(row.row)[4] == "Оформитель"
+            and clean_data[5] == "Активирован"
         ):
             return False
 

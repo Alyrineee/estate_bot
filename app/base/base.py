@@ -107,6 +107,7 @@ async def state_email(message: Message, state: FSMContext):
             data["email"],
             data["number"],
             data["type"],
+            "Ожидает активации",
         ]
     )
     await state.clear()
