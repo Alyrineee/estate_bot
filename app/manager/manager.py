@@ -57,7 +57,7 @@ async def callback_request(callback: CallbackQuery):
 @manager.callback_query(F.data.startswith("caccept"))
 async def callback_client_accept(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
-    await state.update_data(row_id=int(callback.data.split("#")[1]))
+    await state.update_data(row_id=callback.data.split("#")[1])
     await state.set_state(HousesBuilderStates.houses)
     await callback.message.edit_text("Введите ЖК через запятую")
 
@@ -74,10 +74,16 @@ async def state_builders(message: Message, state: FSMContext):
     await state.update_data(builders=message.text)
     await state.set_state(HousesBuilderStates.builders)
     data = await state.get_data()
+    agent_id = table.get_client(data["row_id"])[7]
     table.edit_status(
-        data["row_id"],
+        int(data["row_id"]),
         "Клиент уникален",
     )
+    await message.bot.send_message(
+        agent_id,
+        f"Клиент уникален для следующих ЖК: {data["houses"]}",
+    )
+
     await message.answer("Успешно✅")
     await state.clear()
 

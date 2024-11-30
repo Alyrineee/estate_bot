@@ -27,7 +27,7 @@ def clients_inline_keyboard(data, page):
         )
 
     bottom_buttons = []
-    if page != 1:
+    if page > 1:
         bottom_buttons.append(
             InlineKeyboardButton(
                 text="⬅️",
