@@ -3,9 +3,9 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import CallbackQuery, Message
+from estate_bot.app.keyboards import paginate_inline_keyboard
 from estate_bot.app.manager.manager_keyboards import (
     client_accept_keyboard,
-    clients_inline_keyboard,
 )
 from estate_bot.utils.google_api.models import ClientManager
 
@@ -19,23 +19,25 @@ class HousesBuilderStates(StatesGroup):
 
 
 @manager.message(Command("check_requests"))
-async def check_requests(message: Message):
+async def cmd_check_requests(message: Message):
     await message.answer(
         "Выберите заявку",
-        reply_markup=clients_inline_keyboard(
+        reply_markup=paginate_inline_keyboard(
             table.get_clients(),
             1,
+            "request",
         ),
     )
 
 
-@manager.callback_query(F.data.startswith("rpage"))
-async def paginate_page(callback: CallbackQuery):
+@manager.callback_query(F.data.startswith("requestpage"))
+async def callback_paginate_page(callback: CallbackQuery):
     await callback.answer()
     await callback.message.edit_reply_markup(
-        reply_markup=clients_inline_keyboard(
+        reply_markup=paginate_inline_keyboard(
             table.get_clients(),
             int(callback.data.split("#")[1]),
+            "request",
         ),
     )
 
@@ -62,6 +64,22 @@ async def callback_client_accept(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text("Введите ЖК через запятую")
 
 
+@manager.callback_query(F.data.startswith("cdecline"))
+async def callback_client_decline(callback: CallbackQuery):
+    await callback.answer()
+    agent_id = table.get_client(callback.data.split("#")[1])[7]
+    await callback.bot.send_message(
+        agent_id,
+        "Клиент не уникален.\n\n"
+        "Повторная заявка на данного клиента не требуется.",
+    )
+    table.edit_status(
+        int(callback.data.split("#")[1]),
+        "Клиент не уникален",
+    )
+    await callback.message.edit_text("Успешно")
+
+
 @manager.message(HousesBuilderStates.houses)
 async def state_houses(message: Message, state: FSMContext):
     await state.update_data(houses=message.text)
@@ -86,19 +104,3 @@ async def state_builders(message: Message, state: FSMContext):
 
     await message.answer("Успешно✅")
     await state.clear()
-
-
-@manager.callback_query(F.data.startswith("cdecline"))
-async def callback_client_decline(callback: CallbackQuery):
-    await callback.answer()
-    agent_id = table.get_client(callback.data.split("#")[1])[7]
-    await callback.bot.send_message(
-        agent_id,
-        "Клиент не уникален.\n\n"
-        "Повторная заявка на данного клиента не требуется.",
-    )
-    table.edit_status(
-        int(callback.data.split("#")[1]),
-        "Клиент не уникален",
-    )
-    await callback.message.edit_text("Успешно")

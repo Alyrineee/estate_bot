@@ -41,12 +41,12 @@ def access_keyboard(telegram_id):
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="Одобрить✅",
-                    callback_data=f"confirm_{telegram_id}",
+                    text="Активировать✅",
+                    callback_data=f"accept#{telegram_id}",
                 ),
                 InlineKeyboardButton(
-                    text="Отклонить❌",
-                    callback_data=f"decline_{telegram_id}",
+                    text="Деактивировать❌",
+                    callback_data=f"decline#{telegram_id}",
                 ),
             ],
         ],

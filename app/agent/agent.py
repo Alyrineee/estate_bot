@@ -6,9 +6,9 @@ from aiogram.types import CallbackQuery, Message
 from estate_bot.app.agent.agent_keyboards import (
     agent_access_keyboard,
     budget_inline_keyboard,
-    houses_inline_keyboard,
     region_inline_keyboard,
 )
+from estate_bot.app.keyboards import paginate_inline_keyboard
 from estate_bot.utils.google_api.models import AgentRequest
 
 agent = Router()
@@ -63,10 +63,10 @@ async def state_region(callback: CallbackQuery, state: FSMContext):
 
 @agent.callback_query(RequestStates.budget)
 async def state_budget(callback: CallbackQuery, state: FSMContext):
-    page = await state.get_data()
     budget = {
         "less": "до 15 млн",
         "around": "15-20 млн",
+        "around2": "20-35 млн",
         "more": "более 35 млн",
     }
     await state.update_data(budget=budget[callback.data])
@@ -74,32 +74,35 @@ async def state_budget(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.answer(
         "Выберите ЖК",
-        reply_markup=houses_inline_keyboard(
+        reply_markup=paginate_inline_keyboard(
             table.get_houses(),
-            page.get("current_page", 1),
+            1,
+            "agenthouse",
         ),
     )
 
 
-@agent.callback_query(F.data.startswith("page"))
-async def paginate_page(callback: CallbackQuery):
+@agent.callback_query(F.data.startswith("agenthousepage"))
+async def callback_paginate_page(callback: CallbackQuery):
     await callback.answer()
     await callback.message.edit_reply_markup(
-        reply_markup=houses_inline_keyboard(
+        reply_markup=paginate_inline_keyboard(
             table.get_houses(),
             int(callback.data.split("#")[1]),
+            "agenthouse",
         ),
     )
 
 
 @agent.callback_query(RequestStates.house)
 async def state_house(callback: CallbackQuery, state: FSMContext):
-    callback_data = callback.data.split("_")
+    callback_data = callback.data.split("#")[1]
     await callback.answer()
     await state.set_state(None)
+    house_data = table.get_house(callback_data)
     await state.update_data(
-        house=callback_data[0],
-        builder=callback_data[1],
+        house=house_data[1],
+        builder=house_data[2],
     )
     data = await state.get_data()
     await callback.message.answer(

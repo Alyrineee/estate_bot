@@ -2,6 +2,7 @@ from typing import Any, Awaitable, Callable, Dict
 
 from aiogram import BaseMiddleware
 from aiogram.types import Message, TelegramObject
+from estate_bot.config import ADMINS
 from estate_bot.utils.google_api.models import Authenticate
 
 table = Authenticate()
@@ -22,6 +23,13 @@ class AuthenticateMiddleware(BaseMiddleware):
                 return await event.answer("Недостаточно прав")
         elif event.text == "/check_requests":
             if table.authenticate(event.chat.id, "manager"):
+                return await event.answer("Недостаточно прав")
+        elif (
+            event.text == "/update_database "
+            or event.text == "/manage_users"
+            or event.text == "/view_requests"
+        ):
+            if not (event.chat.id in ADMINS):
                 return await event.answer("Недостаточно прав")
 
         return await handler(event, data)

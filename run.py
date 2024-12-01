@@ -3,6 +3,7 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from app.base.base import base
+from estate_bot.app.admin.admin import admin
 from estate_bot.app.agent.agent import agent
 from estate_bot.app.manager.manager import manager
 from estate_bot.app.middleware.authenticate import AuthenticateMiddleware
@@ -14,7 +15,7 @@ dp = Dispatcher()
 
 
 async def main():
-    dp.include_routers(base, agent, manager)
+    dp.include_routers(base, agent, manager, admin)
     dp.message.middleware.register(AuthenticateMiddleware())
     await dp.start_polling(bot)
 

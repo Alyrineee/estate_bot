@@ -26,17 +26,21 @@ class UserCreation(GoogleSheets):
             [data],
         )
 
-    def request_accept(self, telegram_id):
+    def request_accept(self, telegram_id, status):
         row = self.users.find(telegram_id).row
         self.users.update(
             f"F{row}",
-            [["Активирован"]],
+            [[status]],
         )
 
 
 class AgentRequest(GoogleSheets):
     def get_houses(self):
         return self.houses.get_all_values()[1:]
+
+    def get_house(self, house_id):
+        row = self.houses.find(house_id).row
+        return self.houses.row_values(row)
 
     def create_agent_request(self, data):
         index = len(self.clients.get_all_values()) + 1
@@ -83,3 +87,42 @@ class Authenticate(GoogleSheets):
             return False
 
         return True
+
+
+class AdminManager(GoogleSheets):
+    def get_users(self):
+        return self.users.get_all_values()[1:]
+
+    def get_clients(self):
+        return self.clients.get_all_values()[1:]
+
+    def get_client(self, client_id):
+        row = self.clients.find(client_id).row
+        return self.clients.row_values(row)
+
+    def get_user(self, user_id):
+        row = self.users.find(user_id).row
+        return self.users.row_values(row)
+
+    def get_houses(self):
+        return self.houses.get_all_values()[1:]
+
+    def get_house(self, house_id):
+        row = self.houses.find(house_id).row
+        return self.houses.row_values(row)
+
+    def edit_house(self, index, data):
+        if not index:
+            index = len(self.houses.get_all_values())
+            self.houses.update(
+                f"A{index}:C{index}",
+                [[index]],
+            )
+        self.houses.update(
+            f"B{index}:C{index}",
+            [data],
+        )
+
+    def delete_house(self, index):
+        row = self.houses.find(index).row
+        self.houses.delete_rows(row)

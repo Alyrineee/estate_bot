@@ -113,17 +113,25 @@ async def state_email(message: Message, state: FSMContext):
     await state.clear()
 
 
-@base.callback_query(F.data.startswith("confirm_"))
-async def user_accept(callback: CallbackQuery):
+@base.callback_query(F.data.startswith("accept"))
+async def callback_user_accept(callback: CallbackQuery):
     await callback.answer()
-    table.request_accept(callback.data.replace("confirm_", ""))
-    await callback.message.edit_text("Пользователь создан✅")
-
-
-@base.callback_query(F.data.startswith("decline_"))
-async def user_decline(callback: CallbackQuery):
-    await callback.answer()
-    await callback.bot.send_message(
-        callback.data.replace("decline_", ""), "Вашу заявку отклонили❌"
+    user_id = callback.data.replace("accept#", "")
+    table.request_accept(
+        user_id,
+        "Активирован",
     )
-    await callback.message.edit_text("Запрос отклонен❌")
+    await callback.bot.send_message(user_id, "Вашу заявку подтвердили✅")
+    await callback.message.edit_text("Пользователь активирован✅")
+
+
+@base.callback_query(F.data.startswith("decline"))
+async def callback_user_decline(callback: CallbackQuery):
+    await callback.answer()
+    user_id = callback.data.replace("decline#", "")
+    table.request_accept(
+        user_id,
+        "Дективирован",
+    )
+    await callback.bot.send_message(user_id, "Вашу заявку отклонили❌")
+    await callback.message.edit_text("Пользователь деактивирован❌")
