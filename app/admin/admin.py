@@ -50,10 +50,10 @@ async def callback_request_view(callback: CallbackQuery):
     data = table.get_client(callback.data.split("#")[1])
     await callback.message.edit_text(
         f"ФИО: {data[1]}\n"
-        f"Email: {data[2]}\n"
+        f"Номер телефона: {data[2]}\n"
         f"Регион: {data[3]}\n"
         f"Бюджет: {data[4]}\n"
-        f"ЖК: {data[5]}"
+        f"ЖК: {data[5]}\n"
         f"Статус: {data[6]}",
     )
 

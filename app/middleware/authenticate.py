@@ -25,11 +25,11 @@ class AuthenticateMiddleware(BaseMiddleware):
             if table.authenticate(event.chat.id, "manager"):
                 return await event.answer("Недостаточно прав")
         elif (
-            event.text == "/update_database "
+            event.text == "/update_database"
             or event.text == "/manage_users"
             or event.text == "/view_requests"
         ):
-            if not (event.chat.id in ADMINS):
+            if not (str(event.chat.id) in ADMINS):
                 return await event.answer("Недостаточно прав")
 
         return await handler(event, data)
