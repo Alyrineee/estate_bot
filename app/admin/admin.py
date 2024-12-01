@@ -20,7 +20,7 @@ class HouseUpdateStates(StatesGroup):
     builder = State()
 
 
-@admin.message(Command("view_request"))
+@admin.message(Command("view_requests"))
 async def cmd_view_request(message: Message):
     await message.answer(
         "Выбери заявку",
