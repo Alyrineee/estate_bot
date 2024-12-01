@@ -38,6 +38,13 @@ class AgentRequest(GoogleSheets):
     def get_houses(self):
         return self.houses.get_all_values()[1:]
 
+    def check_number(self, number):
+        number = "7" + number.replace("+", "")[1:]
+        if self.clients.find(number):
+            return False
+
+        return True
+
     def get_house(self, house_id):
         row = self.houses.find(house_id).row
         return self.houses.row_values(row)
@@ -45,6 +52,7 @@ class AgentRequest(GoogleSheets):
     def create_agent_request(self, data):
         index = len(self.clients.get_all_values()) + 1
         data.insert(0, index - 1)
+        data[2] = "7" + data[2].replace("+", "")[1:]
         self.clients.update(
             f"A{index}:H{index}",
             [data],
@@ -60,6 +68,16 @@ class ClientManager(GoogleSheets):
             f"G{index+1}",
             [[data]],
         )
+
+    def get_unverifed_clients(self):
+        unverified_clients = self.clients.findall("Ожидает ответа")
+        return [
+            self.clients.row_values(cell.row) for cell in unverified_clients
+        ]
+
+    def get_managers(self):
+        managers = self.users.findall("Оформитель")
+        return [self.users.row_values(cell.row) for cell in managers]
 
     def get_client(self, client_id):
         row = self.clients.find(client_id).row

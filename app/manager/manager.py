@@ -23,9 +23,7 @@ async def cmd_check_requests(message: Message):
     await message.answer(
         "Выберите заявку",
         reply_markup=paginate_inline_keyboard(
-            table.get_clients(),
-            1,
-            "request",
+            table.get_unverifed_clients(), 1, "request"
         ),
     )
 
@@ -35,7 +33,7 @@ async def callback_paginate_page(callback: CallbackQuery):
     await callback.answer()
     await callback.message.edit_reply_markup(
         reply_markup=paginate_inline_keyboard(
-            table.get_clients(),
+            table.get_unverifed_clients(),
             int(callback.data.split("#")[1]),
             "request",
         ),
@@ -43,9 +41,10 @@ async def callback_paginate_page(callback: CallbackQuery):
 
 
 @manager.callback_query(F.data.startswith("request"))
-async def callback_request(callback: CallbackQuery):
+async def callback_request(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     client = table.get_client(callback.data.split("#")[1])
+    await state.update_data(client=client[1])
     await callback.message.edit_text(
         f"Клиент: {client[1]}\n"
         f"Номер телефона: {client[2]}\n"
@@ -65,7 +64,7 @@ async def callback_client_accept(callback: CallbackQuery, state: FSMContext):
 
 
 @manager.callback_query(F.data.startswith("cdecline"))
-async def callback_client_decline(callback: CallbackQuery):
+async def callback_client_decline(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     agent_id = table.get_client(callback.data.split("#")[1])[7]
     await callback.bot.send_message(
@@ -77,6 +76,7 @@ async def callback_client_decline(callback: CallbackQuery):
         int(callback.data.split("#")[1]),
         "Клиент не уникален",
     )
+    await state.clear()
     await callback.message.edit_text("Успешно")
 
 
@@ -99,6 +99,7 @@ async def state_builders(message: Message, state: FSMContext):
     )
     await message.bot.send_message(
         agent_id,
+        f'Клиент {data["client"]} уникален✅\n\n'
         f'Клиент уникален для следующих ЖК: {data["houses"]}',
     )
 

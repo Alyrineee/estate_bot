@@ -1,3 +1,5 @@
+import re
+
 from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -38,12 +40,19 @@ async def state_full_name(message: Message, state: FSMContext):
 
 @agent.message(RequestStates.phone_number)
 async def state_phone_number(message: Message, state: FSMContext):
-    await state.set_state(RequestStates.region)
-    await state.update_data(phone_number=message.text)
-    await message.answer(
-        "Укажите регион клиента:",
-        reply_markup=region_inline_keyboard,
-    )
+    if re.compile(r"^\+?\d{11}$").match(message.text) and table.check_number(
+        message.text
+    ):
+        await state.set_state(RequestStates.region)
+        await state.update_data(phone_number=message.text)
+        await message.answer(
+            "Укажите регион клиента:",
+            reply_markup=region_inline_keyboard,
+        )
+    else:
+        await message.answer(
+            "Неверно набран номер либо этот номер уже есть в базе"
+        )
 
 
 @agent.callback_query(RequestStates.region)

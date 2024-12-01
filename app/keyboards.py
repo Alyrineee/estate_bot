@@ -10,7 +10,6 @@ def paginate_inline_keyboard(data, page, callback_data):
     keyboard = InlineKeyboardBuilder()
     if page > ceil(len(data) / 5):
         page = ceil(len(data) / 5)
-
     left, right = (page - 1) * 5, min(len(data), (page - 1) * 5 + 5)
     for info in data[left:right]:
         keyboard.add(
@@ -21,7 +20,7 @@ def paginate_inline_keyboard(data, page, callback_data):
         )
 
     bottom_buttons = []
-    if page != 1:
+    if page > 1:
         bottom_buttons.append(
             InlineKeyboardButton(
                 text="⬅️",
