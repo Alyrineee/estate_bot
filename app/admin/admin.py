@@ -60,8 +60,6 @@ async def callback_request_view(callback: CallbackQuery):
 
 @admin.message(Command("manage_users"))
 async def cmd_manage_users(message: Message):
-    print(table.get_users())
-
     await message.answer(
         "Выбери пользователя",
         reply_markup=paginate_inline_keyboard(

@@ -89,20 +89,20 @@ class Authenticate(GoogleSheets):
         row = self.users.find(str(data))
         if permission == "base" and row is None:
             return False
-
-        clean_data = self.users.row_values(row.row)
-        if (
-            permission == "agent"
-            and clean_data[4] == "Агент"
-            and clean_data[5] == "Активирован"
-        ):
-            return False
-        elif (
-            permission == "manager"
-            and self.users.row_values(row.row)[4] == "Оформитель"
-            and clean_data[5] == "Активирован"
-        ):
-            return False
+        elif not (row is None):
+            clean_data = self.users.row_values(row.row)
+            if (
+                permission == "agent"
+                and clean_data[4] == "Агент"
+                and clean_data[5] == "Активирован"
+            ):
+                return False
+            elif (
+                permission == "manager"
+                and self.users.row_values(row.row)[4] == "Оформитель"
+                and clean_data[5] == "Активирован"
+            ):
+                return False
 
         return True
 
