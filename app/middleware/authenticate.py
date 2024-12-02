@@ -2,8 +2,8 @@ from typing import Any, Awaitable, Callable, Dict
 
 from aiogram import BaseMiddleware
 from aiogram.types import Message, TelegramObject
-from estate_bot.config import ADMINS
-from estate_bot.utils.google_api.models import Authenticate
+from config import ADMINS
+from utils.google_api.models import Authenticate
 
 table = Authenticate()
 

@@ -3,12 +3,12 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from app.base.base import base
-from estate_bot.app.admin.admin import admin
-from estate_bot.app.agent.agent import agent
-from estate_bot.app.manager.manager import manager
-from estate_bot.app.middleware.authenticate import AuthenticateMiddleware
-from estate_bot.config import TOKEN
-from estate_bot.utils.google_api.models import ClientManager
+from app.admin.admin import admin
+from app.agent.agent import agent
+from app.manager.manager import manager
+from app.middleware.authenticate import AuthenticateMiddleware
+from config import TOKEN
+from utils.google_api.models import ClientManager
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TOKEN)

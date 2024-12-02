@@ -3,13 +3,14 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import CallbackQuery, Message
-from estate_bot.app.admin.admin_keyboards import (
+
+from app.admin.admin_keyboards import (
     houses_inline_keyboard,
-    update_houses_keyboard,
+    update_houses_keyboard
 )
-from estate_bot.app.base.base_keyboards import access_keyboard
-from estate_bot.app.keyboards import paginate_inline_keyboard
-from estate_bot.utils.google_api.models import AdminManager
+from app.base.base_keyboards import access_keyboard
+from app.keyboards import paginate_inline_keyboard
+from utils.google_api.models import AdminManager
 
 admin = Router()
 table = AdminManager()

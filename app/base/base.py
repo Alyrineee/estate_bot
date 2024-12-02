@@ -3,9 +3,9 @@ from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
-import estate_bot.app.base.base_keyboards
-from estate_bot.config import ADMINS
-from estate_bot.utils.google_api.models import UserCreation
+import app.base.base_keyboards
+from config import ADMINS
+from utils.google_api.models import UserCreation
 
 base = Router()
 table = UserCreation()
@@ -25,7 +25,7 @@ async def cmd_start(message: Message):
         "- 🕵️‍♂️ Агент (являетесь представителем компании или клиентом)\n"
         "- ✍️ Оформитель (занимаетесь документами)\n\n"
         "После выбора роли нам понадобятся ваши данные, чтобы начать",
-        reply_markup=estate_bot.app.base.base_keyboards.role_choice_keyboard,
+        reply_markup=app.base.base_keyboards.role_choice_keyboard,
     )
 
 
@@ -39,7 +39,7 @@ async def callback_agent(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer(
         "Вы выбрали агента\n\n"
         "Пожалуйста нажмите на кнопку чтобы поделиться номером телефона",
-        reply_markup=estate_bot.app.base.base_keyboards.contact_keyboard,
+        reply_markup=app.base.base_keyboards.contact_keyboard,
     )
 
 
@@ -53,7 +53,7 @@ async def callback_manager(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer(
         "Вы выбрали оформителя\n\n"
         "Пожалуйста нажмите на кнопку чтобы поделиться номером телефона",
-        reply_markup=estate_bot.app.base.base_keyboards.contact_keyboard,
+        reply_markup=app.base.base_keyboards.contact_keyboard,
     )
 
 
@@ -95,7 +95,7 @@ async def state_email(message: Message, state: FSMContext):
             f"ФИО: {data['full_name']}\n"
             f"Email: {data['email']}\n"
             f"Должность: {data['type']}",
-            reply_markup=estate_bot.app.base.base_keyboards.access_keyboard(
+            reply_markup=app.base.base_keyboards.access_keyboard(
                 telegram_id=message.chat.id,
             ),
         )

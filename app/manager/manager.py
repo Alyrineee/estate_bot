@@ -3,11 +3,11 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import CallbackQuery, Message
-from estate_bot.app.keyboards import paginate_inline_keyboard
-from estate_bot.app.manager.manager_keyboards import (
+from app.keyboards import paginate_inline_keyboard
+from app.manager.manager_keyboards import (
     client_accept_keyboard,
 )
-from estate_bot.utils.google_api.models import ClientManager
+from utils.google_api.models import ClientManager
 
 manager = Router()
 table = ClientManager()

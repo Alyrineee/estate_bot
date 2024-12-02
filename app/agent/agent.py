@@ -5,13 +5,13 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import CallbackQuery, Message
-from estate_bot.app.agent.agent_keyboards import (
+from app.agent.agent_keyboards import (
     agent_access_keyboard,
     budget_inline_keyboard,
     region_inline_keyboard,
 )
-from estate_bot.app.keyboards import paginate_inline_keyboard
-from estate_bot.utils.google_api.models import AgentRequest
+from app.keyboards import paginate_inline_keyboard
+from utils.google_api.models import AgentRequest
 
 agent = Router()
 table = AgentRequest()

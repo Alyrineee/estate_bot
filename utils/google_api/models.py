@@ -1,4 +1,4 @@
-from estate_bot.config import SERVICE_ACCOUNT, SPREADSHEET_URL
+from config import SERVICE_ACCOUNT, SPREADSHEET_URL
 import gspread
 
 
